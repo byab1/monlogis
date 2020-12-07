@@ -4,15 +4,37 @@ namespace App\Entity;
 
 use Cocur\Slugify\Slugify;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\AgenceRepository;
+use ApiPlatform\Core\Annotation\ApiFilter;
 use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Annotation\ApiSubresource;
 use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity(repositoryClass=AgenceRepository::class)
  * @ORM\HasLifecycleCallbacks
- * @ApiResource
+ * @UniqueEntity(
+ * fields={"agenceEmail"},
+ * message="Cette adresse email existe déjà, veuillez la modifier !")
+ * @ApiResource(
+ *  attributes={
+ *      "pagination_enabled"=true
+ * },
+ * subresourceOperations={
+ *  "factures_get_subresource"={"path"="/agences/{slugAgence}/{id}/factures"},
+ *  "proprietes_get_subresource"={"path"="/agences/{slugAgence}/{id}/proprietes"}
+ * },
+ * normalizationContext={"groups"={"lecture_agence"}}
+ * )
+ * @ApiFilter(SearchFilter::class, properties= {"nomAgence"})
+ * @ApiFilter(OrderFilter::class)
  */
 class Agence
 {
@@ -20,61 +42,78 @@ class Agence
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups({"lecture_agence", "lecture_propriete","lecture_facture"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"lecture_agence", "lecture_propriete","lecture_facture"})
+     * @Assert\NotBlank(message="L'adresse de l'agence est obligatoire")
      */
     private $adresse;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"lecture_agence", "lecture_propriete","lecture_facture"})
+     * @Assert\NotBlank(message="L'accreditation de l'agence est obligatoire")
      */
     private $acreditation;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"lecture_agence", "lecture_propriete","lecture_facture"})
+     * @Assert\NotBlank(message="Le status de l'agence est obligatoire")
+     * @Assert\Choice(choices={"Vérifié", "Non-vérifié"}, message="Le statur doit être Vérifié ou Non-vérifié")
      */
     private $status;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="integer", length=255)
+     * @Groups({"lecture_agence", "lecture_propriete","lecture_facture"})
      */
     private $cote;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"lecture_agence", "lecture_propriete","lecture_facture"})
+     * @Assert\NotBlank(message="Le téléphone de l'agence est obligatoire")
      */
     private $tel;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"lecture_agence", "lecture_propriete","lecture_facture"})
      */
     private $siteWeb;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"lecture_agence"})
      */
     private $permisConstruire;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"lecture_agence"})
      */
     private $couriel;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"lecture_agence"})
      */
     private $boitePostal;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"lecture_agence", "lecture_propriete"})
      */
     private $logo;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
+     * @Groups({"lecture_agence", "lecture_propriete","lecture_facture"})
      */
     private $dateInscription;
 
@@ -83,46 +122,56 @@ class Agence
      */
     private $dateResiliation;
 
-
-    /**
-     * @ORM\ManyToOne(targetEntity=Package::class, inversedBy="agence")
-     */
-    private $package;
-
     /**
      * @ORM\OneToMany(targetEntity=Facture::class, mappedBy="agence")
+     * @Groups({"lecture_agence"})
+     * @ApiSubresource
      */
     private $factures;
 
     /**
      * @ORM\OneToMany(targetEntity=Propriete::class, mappedBy="agence")
+     * @Groups({"lecture_agence"})
+     * @ApiSubresource
      */
     private $proprietes;
 
-    /**
-     * @ORM\OneToMany(targetEntity=Package::class, mappedBy="agence")
-     */
-    private $packages;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"lecture_agence", "lecture_propriete","lecture_facture"})
+     * @Assert\NotBlank(message="L'email de l'agence est obligatoire")
+     * @Assert\Email(message = "L'adresse email '{{ value }}' n'est pas valide.")
      */
     private $agenceEmail;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"lecture_agence"})
      */
     private $slugAgence;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"lecture_agence", "lecture_propriete","lecture_facture"})
+     * @Assert\NotBlank(message="Le nom de l'agence est obligatoire")
+     * 
      */
     private $nomAgence;
 
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="agence")
+     * @Groups({"lecture_agence"})
+     * @Assert\NotBlank(message="L'utilisateur de l'agence est obligatoire")
      */
     private $user;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Package::class, inversedBy="agence")
+     * @Groups({"lecture_agence"})
+     * @Assert\NotBlank(message="Package de l'agence est obligatoire")
+     */
+    private $package;
 
     /**
      * Permet d'initialiser le slug !
@@ -190,12 +239,12 @@ class Agence
         return $this;
     }
 
-    public function getCote(): ?string
+    public function getCote(): ?int
     {
         return $this->cote;
     }
 
-    public function setCote(string $cote): self
+    public function setCote(int $cote): self
     {
         $this->cote = $cote;
 
@@ -298,18 +347,6 @@ class Agence
         return $this;
     }
 
-    public function getPackage(): ?Package
-    {
-        return $this->package;
-    }
-
-    public function setPackage(?Package $package): self
-    {
-        $this->package = $package;
-
-        return $this;
-    }
-
     /**
      * @return Collection|Facture[]
      */
@@ -370,36 +407,6 @@ class Agence
         return $this;
     }
 
-    /**
-     * @return Collection|Package[]
-     */
-    public function getPackages(): Collection
-    {
-        return $this->packages;
-    }
-
-    public function addPackage(Package $package): self
-    {
-        if (!$this->packages->contains($package)) {
-            $this->packages[] = $package;
-            $package->setAgence($this);
-        }
-
-        return $this;
-    }
-
-    public function removePackage(Package $package): self
-    {
-        if ($this->packages->removeElement($package)) {
-            // set the owning side to null (unless already changed)
-            if ($package->getAgence() === $this) {
-                $package->setAgence(null);
-            }
-        }
-
-        return $this;
-    }
-
     public function getAgenceEmail(): ?string
     {
         return $this->agenceEmail;
@@ -444,6 +451,18 @@ class Agence
     public function setUser(?User $user): self
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    public function getPackage(): ?Package
+    {
+        return $this->package;
+    }
+
+    public function setPackage(?Package $package): self
+    {
+        $this->package = $package;
 
         return $this;
     }

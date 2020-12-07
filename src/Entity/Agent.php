@@ -5,13 +5,26 @@ namespace App\Entity;
 use Cocur\Slugify\Slugify;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\AgentRepository;
+use ApiPlatform\Core\Annotation\ApiFilter;
 use Doctrine\Common\Collections\Collection;
+use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Annotation\ApiSubresource;
 use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use Symfony\Component\Validator\Constraints as Assert;
+
 
 /**
  * @ORM\Entity(repositoryClass=AgentRepository::class)
  * @ORM\HasLifecycleCallbacks
+ * @ApiResource(
+ * normalizationContext={"groups"={"lecture_agent"}}
+ * )
+ * @ApiFilter(SearchFilter::class, properties= {"nomAgent", "prenAgent"})
+ * @ApiFilter(OrderFilter::class)
  */
 class Agent
 {
@@ -19,56 +32,70 @@ class Agent
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups({"lecture_agent", "lecture_propriete","lecture_facture"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"lecture_agent", "lecture_propriete","lecture_facture"})
+     * @Assert\NotBlank(message="Le nom de l'agent est obligatoire")
      */
     private $nomAgent;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"lecture_agent", "lecture_propriete","lecture_facture"})
      */
     private $acredAgent;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"lecture_agent", "lecture_propriete","lecture_facture"})
+     * @Assert\NotBlank(message="L'adresse de l'agent est obligatoire")
      */
     private $adrAgent;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"lecture_agent"})
      */
     private $boitePostAgent;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"lecture_agent"})
      */
     private $courielAgent;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"lecture_agent", "lecture_propriete","lecture_facture"})
+     * @Assert\NotBlank(message="Le numéro de téléphone de l'agent est obligatoire")
      */
     private $telAgent;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"lecture_agent", "lecture_propriete","lecture_facture"})
      */
     private $coteAgent;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"lecture_agent", "lecture_propriete","lecture_facture"})
      */
     private $photoAgent;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"lecture_agent"})
      */
     private $requeteAgent;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
+     * @Groups({"lecture_agent", "lecture_propriete","lecture_facture"})
      */
     private $dateInscAgent;
 
@@ -79,31 +106,36 @@ class Agent
 
     /**
      * @ORM\OneToMany(targetEntity=Facture::class, mappedBy="agent")
+     * @Groups({"lecture_agent"})
+     * @ApiSubresource
      */
     private $factures;
 
     /**
-     * @ORM\OneToMany(targetEntity=Package::class, mappedBy="agent")
-     */
-    private $packages;
-
-    /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"lecture_agent", "lecture_propriete","lecture_facture"})
+     * @Assert\NotBlank(message="Le prénom de l'agent est obligatoire")
      */
     private $prenAgent;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"lecture_agent", "lecture_propriete","lecture_facture"})
+     * @Assert\NotBlank(message="L'adresse email ne doit pas être vide !")
+     * @Assert\Email(message = "L'adresse email '{{ value }}' n'est pas valide.")
      */
     private $agentEmail;
 
     /**
      * @ORM\OneToMany(targetEntity=Propriete::class, mappedBy="agent")
+     * @Groups({"lecture_agent"})
+     * @ApiSubresource
      */
     private $proprietes;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"lecture_agent", "lecture_propriete"})
      */
     private $statutAgent;
 
@@ -114,8 +146,17 @@ class Agent
 
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="agent")
+     * @Groups({"lecture_agent"})
      */
     private $user;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Package::class, inversedBy="agent")
+     * @Groups({"lecture_agent"})
+     * @Assert\NotBlank(message="L'agent doit avoir un package !")
+     * 
+     */
+    private $package;
 
 
     /**
@@ -309,36 +350,6 @@ class Agent
         return $this;
     }
 
-    /**
-     * @return Collection|Package[]
-     */
-    public function getPackages(): Collection
-    {
-        return $this->packages;
-    }
-
-    public function addPackage(Package $package): self
-    {
-        if (!$this->packages->contains($package)) {
-            $this->packages[] = $package;
-            $package->setAgent($this);
-        }
-
-        return $this;
-    }
-
-    public function removePackage(Package $package): self
-    {
-        if ($this->packages->removeElement($package)) {
-            // set the owning side to null (unless already changed)
-            if ($package->getAgent() === $this) {
-                $package->setAgent(null);
-            }
-        }
-
-        return $this;
-    }
-
     public function getPrenAgent(): ?string
     {
         return $this->prenAgent;
@@ -425,6 +436,18 @@ class Agent
     public function setUser(?User $user): self
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    public function getPackage(): ?Package
+    {
+        return $this->package;
+    }
+
+    public function setPackage(?Package $package): self
+    {
+        $this->package = $package;
 
         return $this;
     }

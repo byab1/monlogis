@@ -2,13 +2,33 @@
 
 namespace App\Entity;
 
-use App\Repository\ProprieteRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\ProprieteRepository;
+use ApiPlatform\Core\Annotation\ApiFilter;
+use Doctrine\Common\Collections\Collection;
+use ApiPlatform\Core\Annotation\ApiResource;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use Symfony\Component\Validator\Constraints as Assert;
+
 
 /**
  * @ORM\Entity(repositoryClass=ProprieteRepository::class)
+ * @ApiResource(
+ * attributes={
+ *      "pagination_enabled"=true,
+ *      "pagination_items_per_page"=20,
+ *      "order": {"dateAjout": "desc"}
+ *  },
+ * subresourceOperations={
+ *  "api_agences_proprietes_get_subresource"={
+ *  "normalization_context"={"groups"="proprietes_subresource"}
+ * }
+ * },
+ * normalizationContext={"groups"={"lecture_propriete"}}
+ * )
+ * @ApiFilter(SearchFilter::class)
  */
 class Propriete
 {
@@ -16,126 +36,164 @@ class Propriete
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups({"lecture_propriete", "proprietes_subresource"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"lecture_propriete", "proprietes_subresource"})
+     * @Assert\NotBlank(message="Le nom de la propriété est obligatoire")
      */
     private $nomPropriete;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"lecture_propriete", "proprietes_subresource"})
+     * @Assert\NotBlank(message="La description de la propriété est obligatoire")
      */
     private $desPropriete;
 
     /**
      * @ORM\Column(type="float")
+     * @Groups({"lecture_propriete", "proprietes_subresource"})
+     * @Assert\NotBlank(message="Le prix de la propriété est obligatoire")
+     * @Assert\Type(type="numeric", message="Le prix de la propriété doit être numérique")
      */
     private $prixPropriete;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"lecture_propriete", "proprietes_subresource"})
+     * @Assert\NotBlank(message="L'adresse de la propriété est obligatoire")
      */
     private $adrPropriete;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"lecture_propriete", "proprietes_subresource"})
+     * @Assert\NotBlank(message="La localisation de la propriété est obligatoire")
      */
     private $localisation;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"lecture_propriete", "proprietes_subresource"})
      */
     private $district;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"lecture_propriete", "proprietes_subresource"})
+     * @Assert\NotBlank(message="La ville de la propriété est obligatoire")
      */
     private $ville;
 
     /**
      * @ORM\Column(type="boolean")
+     * @Groups({"lecture_propriete", "proprietes_subresource"})
      */
     private $etatPropriete;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"lecture_propriete", "proprietes_subresource"})
      */
     private $commune;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
+     * @Groups({"lecture_propriete", "proprietes_subresource"})
      */
     private $dateAjout;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
+     * @Groups({"lecture_propriete", "proprietes_subresource"})
      */
     private $dateModifPropriete;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"lecture_propriete", "proprietes_subresource"})
      */
     private $superficie;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"lecture_propriete", "proprietes_subresource"})
+     * @Assert\NotBlank(message="Le statut de la propriété est obligatoire")
+     * @Assert\Choice(choices={"En vente", "Location"}, message="Le statut doit être En vente ou en Location")
      */
     private $statut;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"lecture_propriete", "proprietes_subresource"})
+     * @Assert\NotBlank(message="Veuillez ajouter les photos de la propriété")
      */
     private $photoPropriete;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"lecture_propriete", "proprietes_subresource"})
      */
     private $video;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"lecture_propriete", "proprietes_subresource"})
      */
     private $tourVirtuel;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"lecture_propriete", "proprietes_subresource"})
      */
     private $walkscore;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"lecture_propriete"})
      */
     private $requete;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
+     * @Groups({"lecture_propriete", "proprietes_subresource"})
      */
     private $vues;
 
     /**
      * @ORM\ManyToOne(targetEntity=Agence::class, inversedBy="proprietes")
+     * @Groups({"lecture_propriete"})
      */
     private $agence;
 
     /**
      * @ORM\OneToMany(targetEntity=Commodite::class, mappedBy="propriete")
+     * @Groups({"lecture_propriete", "proprietes_subresource"})
+     * @Assert\NotBlank(message="Veuillez indiquer les commodités de la propriété")
      */
     private $commodites;
 
     /**
      * @ORM\ManyToOne(targetEntity=TypePropriete::class, inversedBy="propriete")
+     * @Groups({"lecture_propriete", "proprietes_subresource"})
+     * @Assert\NotBlank(message="Veuillez renseigner le type de propriété")
+     * @Assert\Choice(choices={"Villa", "Terrain", "Magasin", "Boutique", "Maison", "Ferme", "Lavage-auto", "Appartement", "Entrepot"}, message="Le statut doit être : maison, terrain, villa, appartement, lavage-auto, ferme, boutique ou entrepot")
      */
     private $typePropriete;
 
     /**
      * @ORM\ManyToOne(targetEntity=Agent::class, inversedBy="proprietes")
+     * @Groups({"lecture_propriete"})
      */
     private $agent;
 
     /**
      * @ORM\OneToMany(targetEntity=Galerie::class, mappedBy="propriete")
+     * @Groups({"lecture_propriete", "proprietes_subresource"})
      */
     private $galeries;
 
@@ -266,18 +324,6 @@ class Propriete
     public function setDateAjout(\DateTimeInterface $dateAjout): self
     {
         $this->dateAjout = $dateAjout;
-
-        return $this;
-    }
-
-    public function getDateSupPropriete(): ?\DateTimeInterface
-    {
-        return $this->dateSupPropriete;
-    }
-
-    public function setDateSupPropriete(?\DateTimeInterface $dateSupPropriete): self
-    {
-        $this->dateSupPropriete = $dateSupPropriete;
 
         return $this;
     }

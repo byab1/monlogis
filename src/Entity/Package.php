@@ -2,13 +2,15 @@
 
 namespace App\Entity;
 
-use App\Repository\PackageRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\PackageRepository;
+use Doctrine\Common\Collections\Collection;
+use ApiPlatform\Core\Annotation\ApiResource;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @ORM\Entity(repositoryClass=PackageRepository::class)
+ * @ApiResource
  */
 class Package
 {
@@ -55,23 +57,25 @@ class Package
     private $etat;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Agence::class, inversedBy="packages")
-     */
-    private $agence;
-
-    /**
      * @ORM\ManyToOne(targetEntity=TypePackage::class, inversedBy="package")
      */
     private $typePackage;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Agent::class, inversedBy="packages")
+     * @ORM\OneToMany(targetEntity=Agence::class, mappedBy="package")
+     */
+    private $agence;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Agent::class, mappedBy="package")
      */
     private $agent;
 
     public function __construct()
     {
         $this->agents = new ArrayCollection();
+        $this->agence = new ArrayCollection();
+        $this->agent = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -163,18 +167,6 @@ class Package
         return $this;
     }
 
-    public function getAgence(): ?Agence
-    {
-        return $this->agence;
-    }
-
-    public function setAgence(?Agence $agence): self
-    {
-        $this->agence = $agence;
-
-        return $this;
-    }
-
     public function getTypePackage(): ?TypePackage
     {
         return $this->typePackage;
@@ -187,14 +179,62 @@ class Package
         return $this;
     }
 
-    public function getAgent(): ?Agent
+    /**
+     * @return Collection|Agence[]
+     */
+    public function getAgence(): Collection
+    {
+        return $this->agence;
+    }
+
+    public function addAgence(Agence $agence): self
+    {
+        if (!$this->agence->contains($agence)) {
+            $this->agence[] = $agence;
+            $agence->setPackage($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAgence(Agence $agence): self
+    {
+        if ($this->agence->removeElement($agence)) {
+            // set the owning side to null (unless already changed)
+            if ($agence->getPackage() === $this) {
+                $agence->setPackage(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Agent[]
+     */
+    public function getAgent(): Collection
     {
         return $this->agent;
     }
 
-    public function setAgent(?Agent $agent): self
+    public function addAgent(Agent $agent): self
     {
-        $this->agent = $agent;
+        if (!$this->agent->contains($agent)) {
+            $this->agent[] = $agent;
+            $agent->setPackage($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAgent(Agent $agent): self
+    {
+        if ($this->agent->removeElement($agent)) {
+            // set the owning side to null (unless already changed)
+            if ($agent->getPackage() === $this) {
+                $agent->setPackage(null);
+            }
+        }
 
         return $this;
     }

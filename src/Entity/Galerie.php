@@ -2,11 +2,13 @@
 
 namespace App\Entity;
 
-use App\Repository\GalerieRepository;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\GalerieRepository;
+use ApiPlatform\Core\Annotation\ApiResource;
 
 /**
  * @ORM\Entity(repositoryClass=GalerieRepository::class)
+ * @ApiResource
  */
 class Galerie
 {
