@@ -12,7 +12,9 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
- * @ApiResource
+ * @ApiResource(
+ *  normalizationContext={"groups"={"lecture_users"}}
+ * )
  */
 class User implements UserInterface
 {
@@ -26,7 +28,7 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
-     * @Groups({"lecture_agence", "lecture_agent"})
+     * @Groups({"lecture_agence", "lecture_agent", "lecture_users"})
      */
     private $email;
 
@@ -43,13 +45,13 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"lecture_agence", "lecture_agent"})
+     * @Groups({"lecture_agence", "lecture_agent", "lecture_users"})
      */
     private $nom;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"lecture_agence", "lecture_agent"})
+     * @Groups({"lecture_agence", "lecture_agent", "lecture_users"})
      */
     private $prenom;
 
