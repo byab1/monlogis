@@ -197,6 +197,11 @@ class Propriete
      */
     private $galeries;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="proprietes")
+     */
+    private $user;
+
     public function __construct()
     {
         $this->commodites = new ArrayCollection();
@@ -528,6 +533,18 @@ class Propriete
                 $galery->setPropriete(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
 
         return $this;
     }

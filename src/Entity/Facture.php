@@ -86,6 +86,12 @@ class Facture
      */
     private $agent;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="factures")
+     * @Assert\NotBlank(message="L'utilisateur est obligatoire")
+     */
+    private $user;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -183,6 +189,18 @@ class Facture
     public function setAgent(?Agent $agent): self
     {
         $this->agent = $agent;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
 
         return $this;
     }

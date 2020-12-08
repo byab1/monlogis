@@ -8,10 +8,16 @@ use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
+ * @UniqueEntity(
+ * fields={"email"},
+ * message="Un utilisateur possède déjà cette adresse, veuillez la modifier !")
  * @ApiResource(
  *  normalizationContext={"groups"={"lecture_users"}}
  * )
@@ -29,6 +35,7 @@ class User implements UserInterface
     /**
      * @ORM\Column(type="string", length=180, unique=true)
      * @Groups({"lecture_agence", "lecture_agent", "lecture_users"})
+     * @Assert\NotBlank(message="L'adresse email de l'utilisateur est obligatoire")
      */
     private $email;
 
@@ -40,18 +47,21 @@ class User implements UserInterface
     /**
      * @var string The hashed password
      * @ORM\Column(type="string")
+     * @Assert\NotBlank(message="Veuillez entrer un mot de passe !")
      */
     private $password;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Groups({"lecture_agence", "lecture_agent", "lecture_users"})
+     * @Assert\NotBlank(message="Le nom de l'utilisateur est obligatoire")
      */
     private $nom;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Groups({"lecture_agence", "lecture_agent", "lecture_users"})
+     * @Assert\NotBlank(message="Le prénom de l'utilisateur est obligatoire")
      */
     private $prenom;
 
@@ -65,10 +75,22 @@ class User implements UserInterface
      */
     private $agence;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Propriete::class, mappedBy="user")
+     */
+    private $proprietes;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Facture::class, mappedBy="user")
+     */
+    private $factures;
+
     public function __construct()
     {
         $this->agent = new ArrayCollection();
         $this->agence = new ArrayCollection();
+        $this->proprietes = new ArrayCollection();
+        $this->factures = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -227,6 +249,66 @@ class User implements UserInterface
             // set the owning side to null (unless already changed)
             if ($agence->getUser() === $this) {
                 $agence->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Propriete[]
+     */
+    public function getProprietes(): Collection
+    {
+        return $this->proprietes;
+    }
+
+    public function addPropriete(Propriete $propriete): self
+    {
+        if (!$this->proprietes->contains($propriete)) {
+            $this->proprietes[] = $propriete;
+            $propriete->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removePropriete(Propriete $propriete): self
+    {
+        if ($this->proprietes->removeElement($propriete)) {
+            // set the owning side to null (unless already changed)
+            if ($propriete->getUser() === $this) {
+                $propriete->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Facture[]
+     */
+    public function getFactures(): Collection
+    {
+        return $this->factures;
+    }
+
+    public function addFacture(Facture $facture): self
+    {
+        if (!$this->factures->contains($facture)) {
+            $this->factures[] = $facture;
+            $facture->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFacture(Facture $facture): self
+    {
+        if ($this->factures->removeElement($facture)) {
+            // set the owning side to null (unless already changed)
+            if ($facture->getUser() === $this) {
+                $facture->setUser(null);
             }
         }
 

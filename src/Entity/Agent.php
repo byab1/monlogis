@@ -76,7 +76,7 @@ class Agent
     private $telAgent;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="integer", length=255)
      * @Groups({"lecture_agent", "lecture_propriete","lecture_facture"})
      */
     private $coteAgent;
@@ -260,12 +260,12 @@ class Agent
         return $this;
     }
 
-    public function getCoteAgent(): ?string
+    public function getCoteAgent(): ?int
     {
         return $this->coteAgent;
     }
 
-    public function setCoteAgent(string $coteAgent): self
+    public function setCoteAgent(int $coteAgent): self
     {
         $this->coteAgent = $coteAgent;
 
