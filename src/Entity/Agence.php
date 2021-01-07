@@ -25,7 +25,8 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * message="Cette adresse email existe déjà, veuillez la modifier !")
  * @ApiResource(
  *  attributes={
- *      "pagination_enabled"=true
+ *      "pagination_enabled"=true,
+ *       "pagination_items_per_page"=50
  * },
  * subresourceOperations={
  *  "factures_get_subresource"={"path"="/agences/{slugAgence}/{id}/factures"},

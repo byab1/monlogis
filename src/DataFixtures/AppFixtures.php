@@ -171,8 +171,14 @@ class AppFixtures extends Fixture
                             ->setCommune($faker->city())
                             ->setSuperficie($faker->buildingNumber() . ' m²')
                             ->setStatut($faker->randomElement(['En Vente', 'Location']))
+                            ->setPiscine($faker->randomElement(['Oui', 'Non']))
+                            ->setSpa($faker->randomElement(['Oui', 'Non']))
+                            ->setPanneauSolaire($faker->randomElement(['Oui', 'Non']))
+                            ->setGarage($faker->randomElement(['Oui', 'Non']))
                             ->setEtatPropriete($faker->randomElement(['Visible', 'Non visibble']))
                             ->setPhotoPropriete($photoPropriete)
+                            ->setSalleEau(mt_rand(1, 2))
+                            ->setNbrPiece(mt_rand(1, 5))
                             ->setTypePropriete($typePropriete)
                             ->setDateAjout($faker->dateTimeBetween('-2 months'));
 
@@ -189,29 +195,10 @@ class AppFixtures extends Fixture
 
                             $manager->persist($galerie);
                         }
-
-                        //         //Création des diff commodités pour une propriété
-                        for ($l = 0; $l < mt_rand(2, 6); $l++) {
-                            $commodite = new Commodite();
-
-                            $commodite->setNbPiece(mt_rand(1, 5))
-                                ->setSalleEau(mt_rand(1, 3))
-                                ->setPiscine($faker->randomElement(['OUI', 'NON']))
-                                ->setPanneauSol($faker->randomElement(['OUI', 'NON']))
-                                ->setGarage($faker->randomElement(['OUI', 'NON']))
-                                ->setPropriete($propriete);
-
-                            $manager->persist($commodite);
-                        }
                     }
                 }
             }
         }
-
-
-
-
-
 
         // $product = new Product();
         // $manager->persist($product);

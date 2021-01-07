@@ -18,7 +18,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ApiResource(
  * attributes={
  *      "pagination_enabled"=true,
- *      "pagination_items_per_page"=20,
+ *      "pagination_items_per_page"=100,
  *      "order": {"dateAjout": "desc"}
  *  },
  * subresourceOperations={
@@ -170,12 +170,6 @@ class Propriete
      */
     private $agence;
 
-    /**
-     * @ORM\OneToMany(targetEntity=Commodite::class, mappedBy="propriete")
-     * @Groups({"lecture_propriete", "proprietes_subresource"})
-     * @Assert\NotBlank(message="Veuillez indiquer les commodités de la propriété")
-     */
-    private $commodites;
 
     /**
      * @ORM\ManyToOne(targetEntity=TypePropriete::class, inversedBy="propriete")
@@ -202,9 +196,38 @@ class Propriete
      */
     private $user;
 
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $nbrPiece;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $salleEau;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $piscine;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $spa;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $panneauSolaire;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $garage;
+
     public function __construct()
     {
-        $this->commodites = new ArrayCollection();
         $this->galeries = new ArrayCollection();
     }
 
@@ -453,36 +476,6 @@ class Propriete
         return $this;
     }
 
-    /**
-     * @return Collection|Commodite[]
-     */
-    public function getCommodites(): Collection
-    {
-        return $this->commodites;
-    }
-
-    public function addCommodite(Commodite $commodite): self
-    {
-        if (!$this->commodites->contains($commodite)) {
-            $this->commodites[] = $commodite;
-            $commodite->setPropriete($this);
-        }
-
-        return $this;
-    }
-
-    public function removeCommodite(Commodite $commodite): self
-    {
-        if ($this->commodites->removeElement($commodite)) {
-            // set the owning side to null (unless already changed)
-            if ($commodite->getPropriete() === $this) {
-                $commodite->setPropriete(null);
-            }
-        }
-
-        return $this;
-    }
-
     public function getTypePropriete(): ?TypePropriete
     {
         return $this->typePropriete;
@@ -545,6 +538,78 @@ class Propriete
     public function setUser(?User $user): self
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    public function getNbrPiece(): ?int
+    {
+        return $this->nbrPiece;
+    }
+
+    public function setNbrPiece(int $nbrPiece): self
+    {
+        $this->nbrPiece = $nbrPiece;
+
+        return $this;
+    }
+
+    public function getSalleEau(): ?int
+    {
+        return $this->salleEau;
+    }
+
+    public function setSalleEau(int $salleEau): self
+    {
+        $this->salleEau = $salleEau;
+
+        return $this;
+    }
+
+    public function getPiscine(): ?string
+    {
+        return $this->piscine;
+    }
+
+    public function setPiscine(?string $piscine): self
+    {
+        $this->piscine = $piscine;
+
+        return $this;
+    }
+
+    public function getSpa(): ?string
+    {
+        return $this->spa;
+    }
+
+    public function setSpa(?string $spa): self
+    {
+        $this->spa = $spa;
+
+        return $this;
+    }
+
+    public function getPanneauSolaire(): ?string
+    {
+        return $this->panneauSolaire;
+    }
+
+    public function setPanneauSolaire(?string $panneauSolaire): self
+    {
+        $this->panneauSolaire = $panneauSolaire;
+
+        return $this;
+    }
+
+    public function getGarage(): ?string
+    {
+        return $this->garage;
+    }
+
+    public function setGarage(?string $garage): self
+    {
+        $this->garage = $garage;
 
         return $this;
     }
