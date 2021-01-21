@@ -144,57 +144,47 @@ class AppFixtures extends Fixture
                     $manager->persist($facture);
                 }
 
-
-                //Création des types de propriétés
-                for ($n = 0; $n <= 8; $n++) {
-                    $typePropriete = new TypePropriete();
-
+                //     //Création des propriétés
+                for ($k = 1; $k < mt_rand(5, 10); $k++) {
+                    $propriete = new Propriete();
+                    $photoPropriete = $faker->imageUrl(640, 480);
                     $types = ['Villa', 'Appartement', 'Boutique', 'Maison', 'Entrepot', 'Ferme', 'Terrain', 'Lavage-auto'];
 
-                    $typePropriete->setNomType($faker->randomElement($types));
-                    $manager->persist($typePropriete);
+                    $propriete->setNomPropriete(($faker->streetName()))
+                        ->setAgent($agent)
+                        ->setAgence($agence)
+                        ->setDesPropriete('<p>' . join('<p></p>', $faker->paragraphs(3)) . '</p>')
+                        ->setPrixPropriete($faker->randomNumber())
+                        ->setAdrPropriete($faker->streetAddress())
+                        ->setLocalisation($faker->city())
+                        ->setDistrict($faker->city())
+                        ->setVille($faker->city())
+                        ->setCommune($faker->city())
+                        ->setSuperficie($faker->buildingNumber() . ' m²')
+                        ->setStatut($faker->randomElement(['En Vente', 'Location']))
+                        ->setPiscine($faker->randomElement(['Oui', 'Non']))
+                        ->setSpa($faker->randomElement(['Oui', 'Non']))
+                        ->setPanneauSolaire($faker->randomElement(['Oui', 'Non']))
+                        ->setGarage($faker->randomElement(['Oui', 'Non']))
+                        ->setEtatPropriete($faker->randomElement(['Visible', 'Non visibble']))
+                        ->setPhotoPropriete($photoPropriete)
+                        ->setSalleEau(mt_rand(1, 2))
+                        ->setNbrPiece(mt_rand(1, 5))
+                        ->setType($faker->randomElement($types))
+                        ->setDateAjout($faker->dateTimeBetween('-2 months'));
 
-                    //     //Création des propriétés
-                    for ($k = 1; $k < mt_rand(5, 10); $k++) {
-                        $propriete = new Propriete();
-                        $photoPropriete = $faker->imageUrl(640, 480);
+                    $manager->persist($propriete);
 
-                        $propriete->setNomPropriete(($faker->streetName()))
-                            ->setAgent($agent)
-                            ->setAgence($agence)
-                            ->setDesPropriete('<p>' . join('<p></p>', $faker->paragraphs(3)) . '</p>')
-                            ->setPrixPropriete($faker->randomFloat(2, 200000, 60000000))
-                            ->setAdrPropriete($faker->streetAddress())
-                            ->setLocalisation($faker->city())
-                            ->setDistrict($faker->city())
-                            ->setVille($faker->city())
-                            ->setCommune($faker->city())
-                            ->setSuperficie($faker->buildingNumber() . ' m²')
-                            ->setStatut($faker->randomElement(['En Vente', 'Location']))
-                            ->setPiscine($faker->randomElement(['Oui', 'Non']))
-                            ->setSpa($faker->randomElement(['Oui', 'Non']))
-                            ->setPanneauSolaire($faker->randomElement(['Oui', 'Non']))
-                            ->setGarage($faker->randomElement(['Oui', 'Non']))
-                            ->setEtatPropriete($faker->randomElement(['Visible', 'Non visibble']))
-                            ->setPhotoPropriete($photoPropriete)
-                            ->setSalleEau(mt_rand(1, 2))
-                            ->setNbrPiece(mt_rand(1, 5))
-                            ->setTypePropriete($typePropriete)
-                            ->setDateAjout($faker->dateTimeBetween('-2 months'));
+                    //         //Création de la Galerie d'image
+                    for ($m = 1; $m <= mt_rand(2, 5); $m++) {
 
-                        $manager->persist($propriete);
+                        $galerie = new Galerie();
 
-                        //         //Création de la Galerie d'image
-                        for ($m = 1; $m <= mt_rand(2, 5); $m++) {
+                        $galerie->setUrl($faker->imageUrl())
+                            ->setCaption($faker->sentence())
+                            ->setPropriete($propriete);
 
-                            $galerie = new Galerie();
-
-                            $galerie->setUrl($faker->imageUrl())
-                                ->setCaption($faker->sentence())
-                                ->setPropriete($propriete);
-
-                            $manager->persist($galerie);
-                        }
+                        $manager->persist($galerie);
                     }
                 }
             }

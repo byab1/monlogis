@@ -1,20 +1,19 @@
-import Axios from "axios";
-import { AGENCES_API } from "./config";
-
+import Axios from 'axios';
+import { AGENTS_API } from './config';
 
 function findAll(){
     return Axios
-        .get(AGENCES_API)
+        .get(AGENTS_API)
         .then(response => response.data['hydra:member']);
 }
 
 function find(id){
     return Axios
-        .get(AGENCES_API + "/profile-agence" + id)
+        .get(`http://localhost:8000/api/agents/${id}/profile-agent`)
         .then(response => response.data);
 }
 
 export default {
-    findAll,
-    find
+    find,
+    findAll
 };

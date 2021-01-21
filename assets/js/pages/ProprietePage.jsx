@@ -1,26 +1,16 @@
-import Axios from 'axios';
 import React, { useEffect, useState } from 'react';
+import ProprietesApi from '../services/ProprietesApi';
 
 const ProprietePage = props => {
-  const { id = "new"} = props.match.params;
+  const { id } = props.match.params;
 
-  const [showPropriete, setShowPropriete] = useState([]);
+  const [proprietes, setProprietes] = useState([]);
 
   const fetchPropriete = async id => {
     try {
-        const data = await Axios
-        .get("http://localhost:8000/api/proprietes/" + id + "/details")
-        .then(response => response.data);
-
-        const {nomPropriete, desPropriete, prixPropriete, adrPropriete, localisation, ville, etatPropriete, commune, dateAjout,
-        superficie, statut, photoPropriete, vues, agence, typePropriete, agent, galeries, nbrPiece, salleEau,
-      piscine, spa, panneauSolaire, garage } =  data;
-
-      setShowPropriete({nomPropriete, desPropriete, prixPropriete, adrPropriete, localisation, ville, etatPropriete, commune, dateAjout,
-        superficie, statut, photoPropriete, vues, agence, typePropriete, agent, galeries, nbrPiece, salleEau,
-      piscine, spa, panneauSolaire, garage });
+        const data = await ProprietesApi.find(id);
+        setProprietes(data);
       } catch (error) {
-        console.log(error.response);
       }
     
   }
@@ -37,7 +27,7 @@ const ProprietePage = props => {
               <div className="line_4"></div>
               <div className="line_5"></div>
               <div className="line_6"></div>
-              <a href="index.html">home</a>
+              <a href="index.html">accueil</a>
               <span><i className="fa fa-angle-double-right" aria-hidden="true"></i></span>
               <a href="property-details-1.html">Property details Style - 1</a> 
               </div>
@@ -46,9 +36,9 @@ const ProprietePage = props => {
       <section className="property-details padding">
           <div className="container">
             <div className="row">
-              {showPropriete.map(showprop =>
-              <div className="col-md-12">
-                <h2 className="text-uppercase">{showprop.nomPropriete}</h2>
+              {proprietes.map(propriete =>
+              <div key={propriete.id} className="col-md-12">
+                <h2 className="text-uppercase">{propriete.nomPropriete}</h2>
                 <p className="bottom20">45 Regent Street, London, UK</p>
               </div>
               )};

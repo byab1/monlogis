@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use UserProfileController;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\Collection;
@@ -19,7 +20,8 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * fields={"email"},
  * message="Un utilisateur possède déjà cette adresse, veuillez la modifier !")
  * @ApiResource(
- *  normalizationContext={"groups"={"lecture_users"}}
+ *  normalizationContext={"groups"={"lecture_users"}},
+ * itemOperations={"GET", "PUT", "DELETE", "userProfile"={"method"="get", "path"="/users/profile/{id}", "controller"="App\Controller\UserProfileController"}}
  * )
  */
 class User implements UserInterface

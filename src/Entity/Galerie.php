@@ -44,7 +44,7 @@ class Galerie
         return $this->url;
     }
 
-    public function setUrl(string $url): self
+    public function setUrl($url): self
     {
         $this->url = $url;
 
@@ -56,7 +56,7 @@ class Galerie
         return $this->caption;
     }
 
-    public function setCaption(string $caption): self
+    public function setCaption($caption): self
     {
         $this->caption = $caption;
 

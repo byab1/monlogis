@@ -799,6 +799,37 @@ a.back-to {
 .skills p.pull-right {
     font-size: 14px;
 }
+
+/*Pagination Agence*/
+
+.pageragence {
+    text-align: center;
+    margin: 0;
+    padding: 0;
+}
+.pageragence,
+pageragence > li {
+    display: inline-block;
+    border-radius: 4px;
+}
+.pageragence li > a {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 0;
+    display: inline-block;
+    font-size: 16px;
+    padding: 8px 16px;
+    color: #676767;
+}
+.pageragence li > a:hover,
+.pageragence li > a:focus,
+.pageragence li.active > a {
+    background: #fb6a19;
+    border-color: #fb6a19;
+    color: #fff;
+}
+/*Agents Pagination*/
+
 /*Pagination*/
 
 .pager {

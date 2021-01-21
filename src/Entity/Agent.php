@@ -21,6 +21,10 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Entity(repositoryClass=AgentRepository::class)
  * @ORM\HasLifecycleCallbacks
  * @ApiResource(
+ * attributes={
+ *      "pagination_enabled"=true,
+ *      "pagination_items_per_page"=10
+ * },
  * normalizationContext={"groups"={"lecture_agent"}}
  * )
  * @ApiFilter(SearchFilter::class, properties= {"nomAgent", "prenAgent"})

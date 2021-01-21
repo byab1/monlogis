@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import AgencesApi from '../services/agencesAPI';
-import { NavLink } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 
 
 const AgencesPage = (props) => {
@@ -47,7 +47,7 @@ const AgencesPage = (props) => {
       <div className="line_4"></div>
       <div className="line_5"></div>
       <div className="line_6"></div>
-      <NavLink to="/">accueil</NavLink><span><i className="fa fa-angle-double-right" aria-hidden="true"></i></span><NavLink to="/agences">Liste des agences</NavLink> 
+      <Link to="/">accueil</Link><span><i className="fa fa-angle-double-right" aria-hidden="true"></i></span><NavLink to="/agences">Liste des agences</NavLink> 
     </div>
   </div>
 </div>
@@ -84,12 +84,12 @@ const AgencesPage = (props) => {
           <h2>{agence.nomAgence}</h2>
           <h3><i className="fa fa-map-marker"></i> {agence.proprietes.length} Property</h3>
           <p>Proin condimentum tempus ultrices. Suspendisse vestibulum suscipit erat, ac efficitur lorem. Nullam non ex vel turpis imperdiet maximus sit amet nec odio. Donec mauris nisl, vestibulum id efficitur at, convallis id dui. Sed enim nisl, ultrices vitae sodales eu, vestibulum a mi. Morbi consectetur pulvinar sagittis. Phasellus pharetra diam id leo gravida pharetra. In rutrum est gravida, maximus mi ac, mattis metus. Ut at tempus sem. Vivamus condimentum erat eget aliquet dignissim. </p>
-          <a href="#" className="btn_fill">En savoir plus</a>
+          <Link to={`/agences/profile_agence/${agence.id}`} className="btn_fill">En savoir plus</Link>
         </div>
       </div>
     </div>
       )}
-      <ul className="pageragence top40 padding_bottom">
+      <ul class="pageragence top40 padding_bottom">
         {pages.map(page => 
         <li key={page} class={currentPage === page && " active"}>
           <a onClick={()=> handlePageChange(page)}>{page}</a>

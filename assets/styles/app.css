@@ -1,7 +1,55 @@
-.pageragence {
-  padding-left: 50% !important;
-  margin: 20px 0;
-  text-align: center;
-  list-style: none;
-  padding-top: 15px !important;
+p.errorLogin {
+  line-height: normal;
+  margin: 3px !important;
+  color: #fb6a19 !important;
+}
+
+.white_border,
+.dark_border,
+.btn_fill,
+.btn_brd {
+  padding: 12px 40px;
+  text-transform: uppercase;
+  border-radius: 4px;
+  display: inline-block;
+  margin-top: -50px !important;
+  margin-bottom: 15px;
+}
+.btn_fill:hover,
+.btn_fill:focus,
+.btn_brd:hover,
+.btn_brd:focus {
+  background: #fff;
+  color: #fb6a19;
+}
+.connecteHover {
+  background-color: #fb6a19;
+  color: #fff;
+  padding: 12px 40px;
+  text-transform: uppercase;
+  border-radius: 4px;
+  display: inline-block;
+  margin-top: -50px !important;
+  margin-bottom: 15px;
+}
+
+.btn-link:hover {
+  color: #fb6a19;
+}
+.btn-link {
+  color: #fff;
+  text-decoration: underline;
+  font-weight: 400px;
+}
+
+.icon-icons214 {
+  color: #fb6a19 !important;
+}
+.icon-icons214:hover {
+  background-color: #fb6a19 !important;
+  color: #fff !important;
+}
+.button-214 {
+  background-color: #fb6a19 !important;
+  color: #fff !important;
 }

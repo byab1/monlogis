@@ -16,6 +16,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @ORM\Entity(repositoryClass=ProprieteRepository::class)
  * @ApiResource(
+ * itemOperations={"GET"={"path"="/proprietes/{id}/details"}, "PUT", "DELETE"},
  * attributes={
  *      "pagination_enabled"=true,
  *      "pagination_items_per_page"=100,
@@ -26,7 +27,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  *  "normalization_context"={"groups"="proprietes_subresource"}
  * }
  * },
- * normalizationContext={"groups"={"lecture_propriete"}}
+ * normalizationContext={"groups"={"lecture_propriete"}},
+ * denormalizationContext={"disable_type_enforcement"=true}
  * )
  * @ApiFilter(SearchFilter::class)
  */
@@ -55,17 +57,9 @@ class Propriete
     private $desPropriete;
 
     /**
-     * @ORM\Column(type="float")
-     * @Groups({"lecture_propriete", "proprietes_subresource"})
-     * @Assert\NotBlank(message="Le prix de la propriété est obligatoire")
-     * @Assert\Type(type="numeric", message="Le prix de la propriété doit être numérique")
-     */
-    private $prixPropriete;
-
-    /**
      * @ORM\Column(type="string", length=255)
      * @Groups({"lecture_propriete", "proprietes_subresource"})
-     * @Assert\NotBlank(message="L'adresse de la propriété est obligatoire")
+     * 
      */
     private $adrPropriete;
 
@@ -90,7 +84,7 @@ class Propriete
     private $ville;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="boolean", nullable=true)
      * @Groups({"lecture_propriete", "proprietes_subresource"})
      */
     private $etatPropriete;
@@ -130,7 +124,7 @@ class Propriete
     /**
      * @ORM\Column(type="string", length=255)
      * @Groups({"lecture_propriete", "proprietes_subresource"})
-     * @Assert\NotBlank(message="Veuillez ajouter les photos de la propriété")
+     * 
      */
     private $photoPropriete;
 
@@ -170,15 +164,6 @@ class Propriete
      */
     private $agence;
 
-
-    /**
-     * @ORM\ManyToOne(targetEntity=TypePropriete::class, inversedBy="propriete")
-     * @Groups({"lecture_propriete", "proprietes_subresource"})
-     * @Assert\NotBlank(message="Veuillez renseigner le type de propriété")
-     * @Assert\Choice(choices={"Villa", "Terrain", "Magasin", "Boutique", "Maison", "Ferme", "Lavage-auto", "Appartement", "Entrepot"}, message="Le statut doit être : maison, terrain, villa, appartement, lavage-auto, ferme, boutique ou entrepot")
-     */
-    private $typePropriete;
-
     /**
      * @ORM\ManyToOne(targetEntity=Agent::class, inversedBy="proprietes")
      * @Groups({"lecture_propriete"})
@@ -214,17 +199,30 @@ class Propriete
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $spa;
-
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
     private $panneauSolaire;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $garage;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank(message="Le type de propriété est obligatoire")
+     * @Assert\Choice(choices={"Villa", "Appartement", "Boutique", "Maison", "Entrepot", "Ferme", "Terrain", "Lavage-auto"}, message="Le type de propriété doit être Villa, Maison...")
+     */
+    private $type;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $spa;
+
+    /**
+     * @ORM\Column(type="integer")
+     * @Assert\NotBlank(message="Le type de propriété est obligatoire")
+     */
+    private $prix;
 
     public function __construct()
     {
@@ -256,18 +254,6 @@ class Propriete
     public function setDesPropriete(string $desPropriete): self
     {
         $this->desPropriete = $desPropriete;
-
-        return $this;
-    }
-
-    public function getPrixPropriete(): ?float
-    {
-        return $this->prixPropriete;
-    }
-
-    public function setPrixPropriete(float $prixPropriete): self
-    {
-        $this->prixPropriete = $prixPropriete;
 
         return $this;
     }
@@ -476,18 +462,6 @@ class Propriete
         return $this;
     }
 
-    public function getTypePropriete(): ?TypePropriete
-    {
-        return $this->typePropriete;
-    }
-
-    public function setTypePropriete(?TypePropriete $typePropriete): self
-    {
-        $this->typePropriete = $typePropriete;
-
-        return $this;
-    }
-
     public function getAgent(): ?Agent
     {
         return $this->agent;
@@ -500,9 +474,7 @@ class Propriete
         return $this;
     }
 
-    /**
-     * @return Collection|Galerie[]
-     */
+
     public function getGaleries(): Collection
     {
         return $this->galeries;
@@ -547,7 +519,7 @@ class Propriete
         return $this->nbrPiece;
     }
 
-    public function setNbrPiece(int $nbrPiece): self
+    public function setNbrPiece($nbrPiece): self
     {
         $this->nbrPiece = $nbrPiece;
 
@@ -559,7 +531,7 @@ class Propriete
         return $this->salleEau;
     }
 
-    public function setSalleEau(int $salleEau): self
+    public function setSalleEau($salleEau): self
     {
         $this->salleEau = $salleEau;
 
@@ -610,6 +582,30 @@ class Propriete
     public function setGarage(?string $garage): self
     {
         $this->garage = $garage;
+
+        return $this;
+    }
+
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    public function setType(string $type): self
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    public function getPrix(): ?int
+    {
+        return $this->prix;
+    }
+
+    public function setPrix($prix): self
+    {
+        $this->prix = $prix;
 
         return $this;
     }

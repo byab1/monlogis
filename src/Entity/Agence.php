@@ -175,6 +175,11 @@ class Agence
     private $package;
 
     /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $photoAgence;
+
+    /**
      * Permet d'initialiser le slug !
      * 
      * @ORM\PrePersist
@@ -464,6 +469,18 @@ class Agence
     public function setPackage(?Package $package): self
     {
         $this->package = $package;
+
+        return $this;
+    }
+
+    public function getPhotoAgence(): ?string
+    {
+        return $this->photoAgence;
+    }
+
+    public function setPhotoAgence(?string $photoAgence): self
+    {
+        $this->photoAgence = $photoAgence;
 
         return $this;
     }

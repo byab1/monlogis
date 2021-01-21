@@ -11,7 +11,7 @@ const ContactPage = (props) => {
       <div className="line_4"></div>
       <div className="line_5"></div>
       <div className="line_6"></div>
-      <a href="index.html">home</a><span><i className="fa fa-angle-double-right" aria-hidden="true"></i></span><a href="contact-us.html">Contact us</a> 
+      <a href="index.html">accueil</a><span><i className="fa fa-angle-double-right" aria-hidden="true"></i></span><a href="contact-us.html">Contact us</a> 
     </div>
   </div>
 </div>

@@ -1,7 +1,19 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { NavLink } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import AuthContext from '../contexts/AuthContext';
+import AuthApi from '../services/authApi';
 
-const Navbar = (props) => {
+const Navbar = ({ history })  => {
+
+    const { isAuthenticated, setIsAuthenticated } = useContext(AuthContext);
+
+    const handleLogout = () => {
+        AuthApi.logout();
+        setIsAuthenticated(false);
+        toast.info("Vous êtes désormais déconnecté !");
+        history.push("/login");
+    }   
     return ( <>
 
      {/* HEADER TOP  */}
@@ -14,13 +26,32 @@ const Navbar = (props) => {
                 <div className="col-md-8 col-sm-8 col-xs-12 text-right">
                     <div className="header-top-links">
                         <ul>
-                            <li><a href="favorite-properties.html"><i className="icon-heart2"></i>Favorites</a></li>
+                            { (!isAuthenticated && ( 
+                            <>
+                                <li><NavLink to="/login" className="header-login"><i class="fa fa-unlock" aria-hidden="true"></i>Login</NavLink></li>
+                                <li><NavLink to="/register" className="header-login">Inscription</NavLink></li>
+                            </> 
+                            )) || (<>
+                            <li><NavLink to=""><i className="icon-heart2"></i>Favorites</NavLink></li>
                             <li className="af-line"></li>
-                            <li><a href="submit-property.html"><i className="icon-icons215"></i>Submit Property</a></li>
+                            <li><NavLink to="/proprietes/create"><i className="icon-icons215"></i>Submit Property</NavLink></li>
                             <li className="af-line"></li>
-                            <li><a href="my-properties.html"><i className="icon-icons215"></i>My Property</a></li>
-                            <li><NavLink to="/login" className="header-login"><i className="icon-icons179"></i>Login /
-                                    Register</NavLink></li>
+                            <li><NavLink to=""><i className="icon-icons215"></i>My Property</NavLink></li>&nbsp; &nbsp;
+                            <li class="dropdown">
+                                <button href="#." class="dropdown-toggle button-214" data-toggle="dropdown">
+                                    Mon compte <i class="fa fa-angle-double-down" aria-hidden="true"></i></button>
+                                <ul class="dropdown-menu">
+                                    <li><NavLink className="icon-icons214" to={"/users/profile/:id"}>Mon profile</NavLink></li>
+                                    <li><NavLink className="icon-icons214" to="">Mes propriétés</NavLink></li>
+                                    <li><NavLink className="icon-icons214" to="/compte-agence">Créer une agence</NavLink></li>
+                                    <li><NavLink className="icon-icons214" to="/compte-agent" >Créer un agent</NavLink></li>
+                                    <li><NavLink onClick={handleLogout} className="header-login">
+                                        <i className="icon-icons179"></i>Déconnexion</NavLink>
+                                    </li>
+                                </ul>
+                            </li>
+                            </>)}
+                            
                         </ul>
                     </div>
                 </div>
@@ -33,8 +64,8 @@ const Navbar = (props) => {
     <div id="header-bottom">
         <div className="container">
             <div className="row">
-                <div className="col-md-2 hidden-xs hidden-sm"><a href="index.html"><img src="images/logo-white.png"
-                            alt="logo" /></a></div>
+                <div className="col-md-2 hidden-xs hidden-sm"><NavLink to="/"><img src="images/logo-white.png"
+                            alt="logo" /></NavLink></div>
                 <div className="col-md-10 col-sm-12 col-xs-12">
                     <div className="get-tuch text-left top20">
                         <i className="icon-telephone114"></i>
@@ -92,11 +123,11 @@ const Navbar = (props) => {
            {/* End Header Navigation  */}
             <div className="collapse navbar-collapse nav_3 clearfix" id="navbar-menu">
                 <ul className="nav navbar-nav navbar-center" data-in="fadeInDown" data-out="fadeOutUp">
-                    <li className="dropdown active">
-                        <NavLink className="active" to="/" className="dropdown-toggle" data-toggle="dropdown">Homes</NavLink>
+                    <li>
+                        <NavLink to="/" ClassName="active" className="dropdown-toggle" data-toggle="dropdown">Accueil</NavLink>
                     </li>
                     <li className="dropdown megamenu-fw">
-                        <NavLink to="" className="dropdown-toggle" data-toggle="dropdown">Proprietes</NavLink>
+                        <NavLink to="" activeClassName="active" className="dropdown-toggle" data-toggle="dropdown">Proprietes</NavLink>
                         <ul className="dropdown-menu megamenu-content" role="menu">
                             <li>
                                 <div className="row">
@@ -169,16 +200,16 @@ const Navbar = (props) => {
                             </li>
                         </ul>
                     </li>
-                    <li className="dropdown">
+                    <li>
                         <NavLink to="/agences" className="dropdown-toggle" data-toggle="dropdown">Agences</NavLink>
                     </li>
-                    <li className="dropdown">
+                    <li>
                         <NavLink to="/agents" className="dropdown-toggle" data-toggle="dropdown">Agents</NavLink>
                     </li>
-                    <li className="dropdown">
+                    <li>
                         <NavLink to="/contact" className="dropdown-toggle" data-toggle="dropdown">contact</NavLink>
                     </li>
-                    <li className="dropdown">
+                    <li>
                         <NavLink to="/a_propos" className="dropdown-toggle" data-toggle="dropdown">a propos</NavLink>
                     </li>
                 </ul>
